@@ -22,8 +22,11 @@ class MiddleMatchCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var matchTimeLB: UILabel!
     
+    @IBOutlet weak var homeTeamScoreLB: UILabel!
     
+    @IBOutlet weak var awayTeamScoreLB: UILabel!
     
+    @IBOutlet weak var staduimLabel: UILabel!
     
     
 }
