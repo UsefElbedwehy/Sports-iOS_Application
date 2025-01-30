@@ -23,14 +23,26 @@ class Presenter {
             self.view?.renderDataToView(res:res!)
         }
     }
-    func FetchTeamsFromJson(_ leagueIndex:Int) {
-        Service.fetchTeamsFromModel(leagueIndex:leagueIndex) { res in
+    func FetchTeamsFromJson(_ leagueIndex:Int, leagueID:String) {
+        Service.fetchTeamsFromModel(leagueIndex:leagueIndex, exten: leagueID) { res in
             self.leagueView?.renderTeamsToView(res:res!)
         }
     }
-    func FetchFixtureFromJson(_ leagueIndex:Int) {
-        Service.fetchFixturesFromModel(leagueIndex:leagueIndex) { res in
-            self.leagueView?.renderLatestMatchesToView(res:res!)
+    //from=2025-01-25&to=2025-02-25&leagueId=
+    func FetchFixtureFromJson(_ leagueIndex:Int , leagueID:String) {
+        if leagueID == "28"{
+            Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2022-11-20","to=2022-12-19","leagueId=\(leagueID)"]) { res in
+                self.leagueView?.renderLatestMatchesToView(res:res!)
+            }
+        }else{
+            Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2024-12-01","to=2025-01-29","leagueId=\(leagueID)"]) { res in
+                self.leagueView?.renderLatestMatchesToView(res:res!)
+            }
+        }
+    }
+    func FetchUpComingFixtureFromJson(_ leagueIndex:Int , leagueID:String) {
+        Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2025-03-30","to=2025-04-30","leagueId=\(leagueID)"]) { res in
+            self.leagueView?.renderUpcomingMatchesToView(res:res!)
         }
     }
 }
