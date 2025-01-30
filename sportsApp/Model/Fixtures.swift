@@ -19,9 +19,9 @@ class Fixture : Decodable{
        var home_team_key: Int?
        var event_away_team: String?
        var away_team_key: Int?
-//       var event_halftime_result: String?
-//       var event_final_result: String?
-//       var event_ft_result: String?
+       var event_halftime_result: String?
+       var event_final_result: String?
+       var event_ft_result: String?
 //       var event_penalty_result: String?
 //       var event_status: String?
 //       var country_name: String?
@@ -30,7 +30,7 @@ class Fixture : Decodable{
 //       var league_round: String?
 //       var league_season: String?
 //       var event_live: Int?
-//       var event_stadium: String?
+       var event_stadium: String?
 //       var event_referee: String?
        var home_team_logo: String?
        var away_team_logo: String?
