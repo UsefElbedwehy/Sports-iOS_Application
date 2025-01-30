@@ -11,15 +11,8 @@ class TeamDetailsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        view.layer.addSublayer(UIHelper.createGradientLayer(self.view))
-        let backButton = UIBarButtonItem(title: "Custom", style: .plain, target: self, action: #selector(popScreen)    )
-        backButton.image = UIImage(named: "previous") //Replaces title
-        navigationItem.setLeftBarButton(backButton, animated: false)
-    }
-    @objc func popScreen(){
-        navigationController?.popViewController(animated: true)
+        UIHelper.addGradientSubViewToView(view: view)
+        NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
     }
     
 

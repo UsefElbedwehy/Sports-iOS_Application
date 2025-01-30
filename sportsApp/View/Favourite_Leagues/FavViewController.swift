@@ -11,9 +11,7 @@ class FavViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        view.layer.addSublayer(UIHelper.createGradientLayer(view))
+        UIHelper.addGradientSubViewToView(view: view)
         tabBarController?.title = "Favourite Leagues"
     }
     override func viewWillAppear(_ animated: Bool) {

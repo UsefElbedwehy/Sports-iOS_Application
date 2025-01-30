@@ -1,0 +1,6 @@
+framework module Pods_sportsApp_sportsAppUITests {
+  umbrella header "Pods-sportsApp-sportsAppUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

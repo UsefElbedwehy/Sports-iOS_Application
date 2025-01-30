@@ -15,20 +15,16 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
         super.viewDidLoad()
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
-        // Do any additional setup after loading the view.
         initBackGroundColor()
-        addGradientToTheView()
+        UIHelper.addGradientSubViewToView(view: view, at: 0)
         tabBarController?.title = "Sports"
-//        addOverlayoutOnCollection()
-//        CollectionSubView.layer.addSublayer(UIHelper.createGradientLayer(view))
-        
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         tabBarController?.title = "Sports"
     }
     func initBackGroundColor() {
         view.backgroundColor = UIColor.black
-//        collectionView.backgroundColor = UIColor.black
     }
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         1
@@ -37,19 +33,21 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
         return 4
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let AllLeagues = self.storyboard?.instantiateViewController(identifier: "sportLVC") as! SportLeaguesViewController
-        AllLeagues.navigationItem.title = leagues[indexPath.row] + " League"
-        self.navigationController?.pushViewController(AllLeagues, animated: true)
+        let allLeagues = self.storyboard?.instantiateViewController(identifier: "sportLVC") as! SportLeaguesViewController
+        allLeagues.navigationItem.title = Sports.sports[indexPath.row] + " League"
+        allLeagues.leagueIndex = indexPath.row
+        self.navigationController?.pushViewController(allLeagues, animated: true)
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! LeaguesCollectionViewCell
-        cell.titleLB.text = leagues[indexPath.row]
+        cell.titleLB.text = Sports.sports[indexPath.row].capitalized
         cell.titleLB.layer.borderWidth = 1.0
         cell.titleLB.layer.borderColor = UIColor.white.cgColor
-        cell.imgView.image = UIImage(named: leagues[indexPath.row])
+        cell.imgView.image = UIImage(named: Sports.sports[indexPath.row].capitalized)
         cell.imgView.contentMode = .scaleAspectFill
-        addOverlayoutOnCell(cell)
-        cell.viewLayer.layer.insertSublayer(UIHelper.createGradientLayerBlack(view), at: 0)
+        cell.viewLayer.layer.bounds = view.bounds
+        UIHelper.addGradientSubViewToCell(view: cell.viewLayer, at: 0)
+        UIHelper.addGradientSubView(view: cell.viewLayer, GardientColors: [UIColor.black.cgColor,UIColor.white.cgColor], at: 0)
         setCellConfigurations(cell)
         return cell
     }
@@ -65,6 +63,7 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
     }
     
     func setCellConfigurations(_ cell: LeaguesCollectionViewCell){
+        
         cell.layer.borderColor  = UIColor.systemPink.cgColor
         cell.layer.cornerRadius = 15.0
         cell.layer.borderWidth  = 1.5
@@ -72,18 +71,19 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
         cell.layer.shadowOffset = CGSize(width: 0.0, height: 2)
         cell.layer.shadowRadius = 4
     }
-
-    func addOverlayoutOnCell(_ cell: LeaguesCollectionViewCell) {
-        
-        cell.viewLayer.layer.insertSublayer(UIHelper.createGradientLayer(view), at: 0)
-    }
     
-    func addOverlayoutOnCollection() {
-        collectionView.layer.insertSublayer(UIHelper.createGradientLayer(view), at: 0)
-    }
-    func addGradientToTheView(){
-        view.layer.insertSublayer(UIHelper.createGradientLayer(view), at: 0)
-    }
+
+//    func addOverlayoutOnCell(_ cell: LeaguesCollectionViewCell) {
+//        
+//        cell.viewLayer.layer.insertSublayer(UIHelper.createGradientLayer(view), at: 0)
+//    }
+//    
+//    func addOverlayoutOnCollection() {
+//        collectionView.layer.insertSublayer(UIHelper.createGradientLayer(view), at: 0)
+//    }
+//    func addGradientToTheView(){
+//        view.layer.insertSublayer(UIHelper.createGradientLayer(view), at: 0)
+//    }
     
     /*
     // MARK: - Navigation
