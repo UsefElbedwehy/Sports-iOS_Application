@@ -34,6 +34,16 @@ class UIHelper {
         gradLayer.frame = view.bounds
         view.layer.insertSublayer(gradLayer, at: at)
     }
+    public static func addGradientSubViewToTeamsCell(view:UIView , at: UInt32) {
+        let gradLayer = createGradientLayerForTeamsCell(view)
+        gradLayer.frame = view.bounds
+        view.layer.insertSublayer(gradLayer, at: at)
+    }
+    public static func addGradientSubViewToPlayerCell(view:UIView , at: UInt32) {
+        let gradLayer = createGradientLayerForPlayerCell(view)
+        gradLayer.frame = view.bounds
+        view.layer.insertSublayer(gradLayer, at: at)
+    }
     public static func addGradientSubView(view:UIView ,GardientColors:[CGColor]  , at: UInt32) {
         let gradLayer = createGradientLayer(view: view, withColors:GardientColors )
         gradLayer.frame = view.bounds
@@ -77,6 +87,26 @@ class UIHelper {
         gradLayer.frame = view.bounds
         gradLayer.startPoint = CGPoint(x: 0.0, y: 1.0)
         gradLayer.colors = [UIColor.red.cgColor,UIColor.black.cgColor,UIColor.black.cgColor,
+                            UIColor.blue.cgColor]
+        gradLayer.endPoint = CGPoint(x: 1.0, y: 1.0)
+        gradLayer.opacity = 0.4
+        return gradLayer
+    }
+    private static func createGradientLayerForTeamsCell(_ view:UIView) -> CAGradientLayer{
+        let gradLayer   = CAGradientLayer()
+        gradLayer.frame = view.bounds
+        gradLayer.startPoint = CGPoint(x: 1.0, y: 0.0)
+        gradLayer.colors = [UIColor.red.cgColor,UIColor.black.cgColor,UIColor.black.cgColor,
+                            UIColor.blue.cgColor]
+        gradLayer.endPoint = CGPoint(x: 1.0, y: 1.0)
+        gradLayer.opacity = 0.4
+        return gradLayer
+    }
+    private static func createGradientLayerForPlayerCell(_ view:UIView) -> CAGradientLayer{
+        let gradLayer   = CAGradientLayer()
+        gradLayer.frame = view.bounds
+        gradLayer.startPoint = CGPoint(x: 1.0, y: 0.0)
+        gradLayer.colors = [UIColor.black.cgColor,UIColor.black.cgColor,UIColor.blue.cgColor,
                             UIColor.blue.cgColor]
         gradLayer.endPoint = CGPoint(x: 1.0, y: 1.0)
         gradLayer.opacity = 0.4
