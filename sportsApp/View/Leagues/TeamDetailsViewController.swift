@@ -6,16 +6,70 @@
 //
 
 import UIKit
+import Kingfisher
 
-class TeamDetailsViewController: UIViewController {
+//protocol TeamProtocol {
+//    func renderPlayersToView(res: Players)
+//}
 
+class TeamDetailsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource /*, TeamProtocol*/ {
+
+    @IBOutlet weak var teamTableView: UITableView!
+    var playersArray = [Players]()
+    var teamID = 0
     override func viewDidLoad() {
         super.viewDidLoad()
+        teamTableView.delegate   = self
+        teamTableView.dataSource = self
         UIHelper.addGradientSubViewToView(view: view)
         NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
     }
     
-
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch section {
+        case 0:
+            return 1
+        default:
+            return playersArray.count
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let playerCell = teamTableView.dequeueReusableCell(withIdentifier: "teamCell") as! PlayersOfTeamTableViewCell
+        switch indexPath.section {
+        case 0:
+            playerCell.playerNameLB.text = playersArray[indexPath.row].player_name
+        default:
+            playerCell.playerNameLB.text = playersArray[indexPath.row].player_name
+            if let playerUrl = URL(string: playersArray[indexPath.row].player_image ?? "https://www.plasticoncomposites.com/de/img/team-placeholder.png") {
+                let placeholder = UIImage(named: "team-placeholder")  // Ensure you add this image to Assets
+                playerCell.playerImgView.kf.setImage(with: playerUrl, placeholder: placeholder)
+            } else {
+                playerCell.playerImgView.image = UIImage(named: "team-placeholder")
+            }
+            playerCell.playerImgView.layer.cornerRadius = 130/2
+            playerCell.playerImgView.layer.borderWidth = 3.0
+            playerCell.playerImgView.layer.borderColor = UIColor.blue.cgColor
+            playerCell.playerNumberLB.text = playersArray[indexPath.row].player_number
+            playerCell.playerPositionLB.text = playersArray[indexPath.row].player_type
+            UIHelper.removeExistingGradients(from: playerCell.playerCardView)
+            UIHelper.addGradientSubViewToPlayerCell(view: playerCell.playerCardView, at: 0)
+            playerCell.playerCardView.frame = view.bounds
+            playerCell.layer.cornerRadius = 50.0
+        }
+        return playerCell
+    }
+    
+//    func renderPlayersToView(res: Players) {
+//        playersArray = res
+//        DispatchQueue.main.async {
+//            
+//        }
+//    }
     /*
     // MARK: - Navigation
 
