@@ -14,4 +14,12 @@ class ApiKeys {
     public static func createApiUrl(league:String , parameter: String  ) -> String {
         return "https://apiv2.allsportsapi.com/\(league)/?met=\(parameter)&APIkey=\(key)"
     }
+    public static func createApiUrlWithExten(league:String , parameter: String ,exten:[String] ) -> String {
+        var urlStr = "https://apiv2.allsportsapi.com/\(league)/?met=\(parameter)&APIkey=\(key)"
+        for item in exten {
+            urlStr.append("&")
+            urlStr.append(item)
+        }
+        return urlStr
+    }
 }
