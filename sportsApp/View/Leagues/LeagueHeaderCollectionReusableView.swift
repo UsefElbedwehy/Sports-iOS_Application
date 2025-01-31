@@ -8,5 +8,6 @@
 import UIKit
 
 class LeagueHeaderCollectionReusableView: UICollectionReusableView {
-        
+    @IBOutlet weak var headerLB: UILabel!
+    
 }
