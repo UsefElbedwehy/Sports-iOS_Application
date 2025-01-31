@@ -10,11 +10,16 @@ protocol LeagueProtocol {
     func renderLatestMatchesToView(res: Fixtures)
     func renderTeamsToView(res: Teams)
     func renderUpcomingMatchesToView(res: Fixtures)
+    func chechFavourite(res: Bool)
 }
 
 class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueProtocol {
+    
+    
     var leagueIndex = 0
     var leagueId    = "0"
+    var isInitialFavourite = true
+    var leagueDetails:League!
     var fixturesArray = [Fixture]()
     var upComingArray = [Fixture]()
     var teamsArray = [Team]()
@@ -22,10 +27,10 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     let awayPlaceHolder = "https://marketplace.canva.com/EAF7iHWkPBk/1/0/1600w/canva-blue-and-yellow-circle-modern-football-club-badge-logo-B4ALVxfLQS0.jpg"
     let homePlaceHolder = "https://images-platform.99static.com/4UjFKF0lqaqTGtHZIUNsYeNeUak=/500x500/top/smart/99designs-contests-attachments/45/45950/attachment_45950568"
     let teamLogoPlaceHolder = "https://e7.pngegg.com/pngimages/710/859/png-clipart-logo-football-team-football-logo-design-free-logo-design-template-label.png"
+    let presenter = Presenter()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = true
-        let presenter = Presenter()
         presenter.attachToLeagueView(view: self)
         presenter.FetchTeamsFromJson(leagueIndex,leagueID: leagueId)
         presenter.FetchFixtureFromJson(leagueIndex,leagueID: leagueId)
@@ -33,9 +38,18 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
         UIHelper.addGradientSubViewToView(view: view)
         compsitionalLayoutInit()
         NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
+        navigationController?.navigationBar.barTintColor = UIColor(red: 0.09, green: 0.008, blue: 0.051, alpha: 1)
         sleep(UInt32(0.18))
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        isFavourite()
+    }
+    func isFavourite(){
+        presenter.isFound(id:leagueDetails.league_key ?? 28)
+    }
+    @objc func addToFav(){
+        isFavourite()
+    }
     func renderLatestMatchesToView(res: Fixtures) {
         guard let result = res.result else {
                 print("Error: Fixtures result is nil")
@@ -67,7 +81,34 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
             self.collectionView.reloadData()
         }
     }
-    
+    func chechFavourite(res: Bool) {
+        if isInitialFavourite == true{
+            isInitialFavourite = false
+            if res == true {
+                let favButton = UIBarButtonItem(title: "favourite", style: .plain, target: self, action: #selector(addToFav))
+                favButton.image = UIImage(named: "fav") //Replaces title
+                navigationItem.setRightBarButton(favButton, animated: false)
+            }else{
+                let favButton = UIBarButtonItem(title: "favourite", style: .plain, target: self, action: #selector(addToFav))
+                favButton.image = UIImage(named: "unfav") //Replaces title
+                navigationItem.setRightBarButton(favButton, animated: false)
+            }
+        }else{
+            if res == true {
+                setUnFavImg()
+                presenter.removeTheLeagueFromFavourites(id: leagueDetails.league_key ?? 0)
+            }else{
+                setFavImg()
+                presenter.saveLeagueToFavLeagues(leagues: [leagueDetails]/*,index:leagueIndex*/)
+            }
+        }
+    }
+    func setFavImg(){
+        navigationItem.rightBarButtonItem?.image = UIImage(named: "fav")
+    }
+    func setUnFavImg(){
+        navigationItem.rightBarButtonItem?.image = UIImage(named: "unfav")
+    }
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 3
     }
@@ -75,9 +116,6 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch section {
         case 0:
-//            if upComingArray.count == 0{
-//                return 1
-//            }
             return upComingArray.count
         case 1:
             return fixturesArray.count
