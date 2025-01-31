@@ -11,7 +11,7 @@ import UIKit
 class UIHelper {
     static func removeExistingGradients(from view: UIView) {
             view.layer.sublayers?.removeAll(where: { $0 is CAGradientLayer })
-        }
+    }
     public static func addGradientSubViewToView(view:UIView) {
         view.layer.addSublayer(createGradientLayer(view))
     }
@@ -48,6 +48,21 @@ class UIHelper {
         let gradLayer = createGradientLayer(view: view, withColors:GardientColors )
         gradLayer.frame = view.bounds
         view.layer.insertSublayer(gradLayer, at: at)
+    }
+    //
+    public static func addGradientSubView(view: UIView, tableView: UITableView){
+       
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = view.bounds
+        gradientLayer.colors = [UIColor.red.cgColor, UIColor.blue.cgColor]
+        gradientLayer.startPoint = CGPoint(x: 1, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
+        gradientLayer.opacity = 0.15
+        let backgroundView = UIView(frame: view.bounds)
+        backgroundView.layer.insertSublayer(gradientLayer, at: 0)
+            
+        tableView.backgroundView = backgroundView
+        
     }
     
     private static func createGradientLayer(_ view:UIView) -> CAGradientLayer{
