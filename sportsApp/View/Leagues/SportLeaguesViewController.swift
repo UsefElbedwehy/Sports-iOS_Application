@@ -23,7 +23,10 @@ class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITab
         let presenter = Presenter()
         presenter.attachToView(view: self)
         presenter.FetchLeaguesFromJson(leagueIndex)
-        UIHelper.addGradientSubViewToView(view: view)
+        UIHelper.addGradientSubViewToView(view: view, at: 0)
+        UIHelper.addGradientSubView(view: view, tableView: leaguesTableView)
+        view.frame = view.bounds
+        
         leaguesTableView.delegate   = self
         leaguesTableView.dataSource = self
         NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
@@ -45,37 +48,19 @@ class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITab
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = leaguesTableView.dequeueReusableCell(withIdentifier: "SportLeaguescell", for: indexPath) as! SportLeagueTopCell
-        if cell.layer.sublayers?.count == 2 {
-            UIHelper.addGradientSubViewToCell(view: cell)
-        }
-        setTableCellsConfiguartions(cell)
         cell.leagueNameLabel.text = leaguesArray[indexPath.row].league_name
         let strUrl = leaguesArray[indexPath.row].league_logo ?? leaguesPlaceholderAddress[leagueIndex]
-        
         let url = URL(string: strUrl)
         cell.leagueLogoImgView.kf.setImage(with: url)
-        cell.leagueLogoImgView.layer.borderWidth = 3.0
-        cell.leagueLogoImgView.layer.borderColor = UIColor.white.cgColor
-        cell.leagueLogoImgView.layer.cornerRadius = 35
-        cell.leagueLogoImgView.contentMode = .scaleAspectFit
         return cell
     }
-    
-    func setTableCellsConfiguartions(_ cell: UITableViewCell){
-        cell.contentView.layer.cornerRadius = 20.0
-        cell.layer.cornerRadius = 20.0
-        cell.layer.shadowRadius = 6.0
-        cell.layer.shadowOffset = CGSize(width: 1.0, height: 2.0)
-        cell.layer.shadowOpacity = 1.0
-        cell.layer.shadowColor = UIColor.black.cgColor
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let leagueDCVC = self.storyboard?.instantiateViewController(identifier: "leagueDetailsCVC") as! LeagueDetailsCollectionViewController
+        leaguesArray[indexPath.row].leagueIndex = leagueIndex
         leagueDCVC.leagueIndex = leagueIndex
-        print("\(leaguesArray[indexPath.row].league_key ?? 12345678)")
-        leagueDCVC.leagueId = String(leaguesArray[indexPath.row].league_key ?? 0) 
+        leagueDCVC.leagueId = String(leaguesArray[indexPath.row].league_key ?? 0)
         leagueDCVC.navigationItem.title = leaguesArray[indexPath.row].league_name ?? "League"
+        leagueDCVC.leagueDetails = leaguesArray[indexPath.row]
         self.navigationController?.pushViewController(leagueDCVC, animated: true)
     }
     
