@@ -11,11 +11,15 @@ class Presenter {
     
     var view:HomeProtocol?
     var leagueView:LeagueProtocol?
+    var favLeagueView:FavLeagueProtocol?
     func attachToView(view:HomeProtocol) {
         self.view = view
     }
     func attachToLeagueView(view:LeagueProtocol) {
         self.leagueView = view
+    }
+    func attachToFavLeagueView(view:FavLeagueProtocol) {
+        self.favLeagueView = view
     }
     
     func FetchLeaguesFromJson(_ leagueIndex:Int){
@@ -45,4 +49,25 @@ class Presenter {
             self.leagueView?.renderUpcomingMatchesToView(res:res!)
         }
     }
+    //  -- Core Data -- --- ---- ----- ------ ------- --------
+    func FetchfavLeaguesFromDataBase(){
+        CoreDataDB.sharedInstance.FetchFavLeaguesFromDBModel { res in
+            self.favLeagueView!.renderFavLeaguesToTableView(res: res!)
+        }
+    }
+    func removeAllFavLeagues(){
+        CoreDataDB.sharedInstance.removeAllFavLeaguesFromDBModel()
+    }
+    func removeTheLeagueFromFavourites(id:Int){
+        CoreDataDB.sharedInstance.removeOneFavLeagueFromDBModel(id: id)
+    }
+    func isFound(id:Int){
+        CoreDataDB.sharedInstance.isFoundInFavLeaguesInDBModel(id: id) { res in
+            self.leagueView!.chechFavourite(res: res)
+        }
+    }
+    func saveLeagueToFavLeagues(leagues: [League]/*,index:Int*/){
+        CoreDataDB.sharedInstance.SaveFavLeaguesToDBModel(leagues: leagues/*,index:index*/)
+    }
+    
 }
