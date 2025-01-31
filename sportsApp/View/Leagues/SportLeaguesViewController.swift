@@ -75,6 +75,7 @@ class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITab
         leagueDCVC.leagueIndex = leagueIndex
         print("\(leaguesArray[indexPath.row].league_key ?? 12345678)")
         leagueDCVC.leagueId = String(leaguesArray[indexPath.row].league_key ?? 0) 
+        leagueDCVC.navigationItem.title = leaguesArray[indexPath.row].league_name ?? "League"
         self.navigationController?.pushViewController(leagueDCVC, animated: true)
     }
     

@@ -8,10 +8,6 @@
 import UIKit
 import Kingfisher
 
-//protocol TeamProtocol {
-//    func renderPlayersToView(res: Players)
-//}
-
 class TeamDetailsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource /*, TeamProtocol*/ {
 
     @IBOutlet weak var teamTableView: UITableView!
@@ -44,26 +40,34 @@ class TeamDetailsViewController: UIViewController, UITableViewDelegate, UITableV
         case 0:
             playerCell.playerNameLB.text = playersArray[indexPath.row].player_name
         default:
-            playerCell.playerNameLB.text = playersArray[indexPath.row].player_name
-            if let playerUrl = URL(string: playersArray[indexPath.row].player_image ?? "https://www.plasticoncomposites.com/de/img/team-placeholder.png") {
-                let placeholder = UIImage(named: "team-placeholder")  // Ensure you add this image to Assets
-                playerCell.playerImgView.kf.setImage(with: playerUrl, placeholder: placeholder)
-            } else {
-                playerCell.playerImgView.image = UIImage(named: "team-placeholder")
-            }
-            playerCell.playerImgView.layer.cornerRadius = 130/2
-            playerCell.playerImgView.layer.borderWidth = 3.0
-            playerCell.playerImgView.layer.borderColor = UIColor.blue.cgColor
-            playerCell.playerNumberLB.text = playersArray[indexPath.row].player_number
-            playerCell.playerPositionLB.text = playersArray[indexPath.row].player_type
-            UIHelper.removeExistingGradients(from: playerCell.playerCardView)
-            UIHelper.addGradientSubViewToPlayerCell(view: playerCell.playerCardView, at: 0)
-            playerCell.playerCardView.frame = view.bounds
-            playerCell.layer.cornerRadius = 50.0
+            configurePlayerCell(playerCell: playerCell, indexPath: indexPath)
         }
         return playerCell
     }
-    
+    func configurePlayerCell(playerCell: PlayersOfTeamTableViewCell, indexPath: IndexPath){
+        playerCell.playerNameLB.text = playersArray[indexPath.row].player_name
+        playerCell.playerNumberLB.text = playersArray[indexPath.row].player_number
+        playerCell.playerPositionLB.text = playersArray[indexPath.row].player_type
+        setPlayerImage(playerCell: playerCell, indexPath: indexPath)
+        setPlayerCellGradient(playerCell:playerCell)
+        playerCell.playerCardView.frame = view.bounds
+        playerCell.layer.cornerRadius = 50.0
+    }
+    func setPlayerCellGradient(playerCell: PlayersOfTeamTableViewCell) {
+        UIHelper.removeExistingGradients(from: playerCell.playerCardView)
+        UIHelper.addGradientSubViewToPlayerCell(view: playerCell.playerCardView, at: 0)
+    }
+    func setPlayerImage(playerCell: PlayersOfTeamTableViewCell , indexPath: IndexPath) {
+        if let playerUrl = URL(string: playersArray[indexPath.row].player_image ?? "https://www.plasticoncomposites.com/de/img/team-placeholder.png") {
+            let placeholder = UIImage(named: "team-placeholder")  // Ensure you add this image to Assets
+            playerCell.playerImgView.kf.setImage(with: playerUrl, placeholder: placeholder)
+        } else {
+            playerCell.playerImgView.image = UIImage(named: "team-placeholder")
+        }
+        playerCell.playerImgView.layer.cornerRadius = 130/2
+        playerCell.playerImgView.layer.borderWidth = 3.0
+        playerCell.playerImgView.layer.borderColor = UIColor.blue.cgColor
+    }
 //    func renderPlayersToView(res: Players) {
 //        playersArray = res
 //        DispatchQueue.main.async {
