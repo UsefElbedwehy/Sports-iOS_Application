@@ -34,7 +34,7 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let allLeagues = self.storyboard?.instantiateViewController(identifier: "sportLVC") as! SportLeaguesViewController
-        allLeagues.navigationItem.title = Sports.sports[indexPath.row] + " League"
+        allLeagues.navigationItem.title = Sports.sports[indexPath.row] + " Leagues"
         allLeagues.leagueIndex = indexPath.row
         self.navigationController?.pushViewController(allLeagues, animated: true)
     }
@@ -46,6 +46,7 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
         cell.imgView.image = UIImage(named: Sports.sports[indexPath.row].capitalized)
         cell.imgView.contentMode = .scaleAspectFill
         cell.viewLayer.layer.bounds = view.bounds
+        cell.viewLayer.frame = view.bounds
         UIHelper.addGradientSubViewToCell(view: cell.viewLayer, at: 0)
         UIHelper.addGradientSubView(view: cell.viewLayer, GardientColors: [UIColor.black.cgColor,UIColor.white.cgColor], at: 0)
         setCellConfigurations(cell)
@@ -63,7 +64,6 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
     }
     
     func setCellConfigurations(_ cell: LeaguesCollectionViewCell){
-        
         cell.layer.borderColor  = UIColor.systemPink.cgColor
         cell.layer.cornerRadius = 15.0
         cell.layer.borderWidth  = 1.5
@@ -71,20 +71,6 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
         cell.layer.shadowOffset = CGSize(width: 0.0, height: 2)
         cell.layer.shadowRadius = 4
     }
-    
-
-//    func addOverlayoutOnCell(_ cell: LeaguesCollectionViewCell) {
-//        
-//        cell.viewLayer.layer.insertSublayer(UIHelper.createGradientLayer(view), at: 0)
-//    }
-//    
-//    func addOverlayoutOnCollection() {
-//        collectionView.layer.insertSublayer(UIHelper.createGradientLayer(view), at: 0)
-//    }
-//    func addGradientToTheView(){
-//        view.layer.insertSublayer(UIHelper.createGradientLayer(view), at: 0)
-//    }
-    
     /*
     // MARK: - Navigation
 
