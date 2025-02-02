@@ -7,11 +7,11 @@
 
 import UIKit
 import Kingfisher
+import Reachability
+
 protocol FavLeagueProtocol {
     func renderFavLeaguesToTableView(res: [League])
 }
-
-
 class FavViewController: UIViewController, UITableViewDataSource, UITableViewDelegate , FavLeagueProtocol{
     
     var favLeagues          = [League]()
@@ -28,6 +28,7 @@ class FavViewController: UIViewController, UITableViewDataSource, UITableViewDel
         super.viewDidLoad()
         favTableView.delegate = self
         favTableView.dataSource = self
+        initNetworkChecker()
         UIHelper.addGradientSubViewToView(view: view, at: 0)
         UIHelper.addGradientSubView(view: view, tableView: favTableView)
         view.frame = view.bounds
@@ -49,7 +50,9 @@ class FavViewController: UIViewController, UITableViewDataSource, UITableViewDel
             favTableView.isHidden = false
             emptyImgView.isHidden = true
             emptyMsgLabel.isHidden = true
+            startCheckingNetwork()
         }
+        
     }
     
     func renderFavLeaguesToTableView(res: [League]) {
@@ -75,10 +78,10 @@ class FavViewController: UIViewController, UITableViewDataSource, UITableViewDel
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = favTableView.dequeueReusableCell(withIdentifier: "favCell") as! FavTableViewCell
         cell.backgroundColor = UIColor.black
-        if let url = URL(string: favLeagues[indexPath.row].league_logo ?? "https://img.freepik.com/premium-vector/carolina-champions-leaque-soccer-football-logo-design-vector-isolated_289688-1010.jpg?semt=ais_hybrid"){
+        if let url = URL(string: favLeagues[indexPath.row].league_logo ?? leaguesPlaceholderAddress[favLeagues[indexPath.row].leagueIndex ?? 0]){
             cell.favImgView.kf.setImage(with: url)
         }else{
-            cell.favImgView.image = UIImage(named: "world-cup")
+            cell.favImgView.image = UIImage(named: "ftPlaceHolder")
         }
         cell.favNameLB.text = favLeagues[indexPath.row].league_name
         return cell
@@ -121,7 +124,6 @@ class FavViewController: UIViewController, UITableViewDataSource, UITableViewDel
     func addEmptyScreen(){
         emptyImgView = UIImageView(frame: CGRect(x: 110, y: 300, width: 200, height: 200))
         emptyImgView.image = UIImage(named: "noData2")
-//        emptyImgView.tintColor = UIColor.white
         self.view.addSubview(emptyImgView)
         emptyMsgLabel = UILabel(frame: CGRect(x: emptyImgView.frame.minX, y: emptyImgView.frame.maxY, width: emptyImgView.frame.width, height: 30))
         emptyMsgLabel.text = "No favourite Leagues!"
@@ -153,5 +155,48 @@ class FavViewController: UIViewController, UITableViewDataSource, UITableViewDel
         // Pass the selected object to the new view controller.
     }
     */
+    //Reachability --------------
+    func initNetworkChecker(){
+        reachability = try! Reachability()
+        NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged(note:)), name: .reachabilityChanged, object: reachability)
+    }
+    func startCheckingNetwork(){
+            do{
+              try reachability.startNotifier()
+            }catch{
+              print("could not start reachability notifier")
+            }
+    }
+    @objc func reachabilityChanged(note: Notification) {
 
+      let reachability = note.object as! Reachability
+
+      switch reachability.connection {
+      case .wifi:
+          print("Reachable via WiFi")
+          favTableView.isHidden = false
+          
+      case .cellular:
+          print("Reachable via Cellular")
+          favTableView.isHidden = false
+          
+      case .unavailable:
+        print("Network not reachable")
+          favTableView.isHidden = true
+          alertForNetworkFailure()
+      }
+    }
+    func stopCheckingNetwork(){
+        reachability.stopNotifier()
+        NotificationCenter.default.removeObserver(self, name: .reachabilityChanged, object: reachability)
+    }
+    
+    //Alert --------------
+    func alertForNetworkFailure(){
+        let alert = UIAlertController(title: "You are Offline!", message: "Connect to the network to go through your favourite leagues details!", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .cancel, handler: nil
+        )
+        alert.addAction(ok)
+        self.present(alert, animated: true)
+    }
 }

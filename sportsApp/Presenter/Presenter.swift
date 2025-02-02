@@ -24,35 +24,59 @@ class Presenter {
     
     func FetchLeaguesFromJson(_ leagueIndex:Int){
         Service.fetchLeaguesFromModel(leagueIndex:leagueIndex) { res in
-            self.view?.renderDataToView(res:res!)
+            guard let res = res else{
+                print("empty data...please try again!")
+                return
+            }
+            self.view?.renderDataToView(res:res)
         }
     }
     func FetchTeamsFromJson(_ leagueIndex:Int, leagueID:String) {
         Service.fetchTeamsFromModel(leagueIndex:leagueIndex, exten: leagueID) { res in
-            self.leagueView?.renderTeamsToView(res:res!)
+            guard let res = res else{
+                print("empty data...please try again!")
+                return
+            }
+            self.leagueView?.renderTeamsToView(res:res)
         }
     }
     //from=2025-01-25&to=2025-02-25&leagueId=
     func FetchFixtureFromJson(_ leagueIndex:Int , leagueID:String) {
         if leagueID == "28"{
             Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2022-11-20","to=2022-12-19","leagueId=\(leagueID)"]) { res in
-                self.leagueView?.renderLatestMatchesToView(res:res!)
+                guard let res = res else{
+                    print("empty data...please try again!")
+                    return
+                }
+                self.leagueView?.renderLatestMatchesToView(res:res)
             }
         }else{
             Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2024-12-01","to=2025-01-29","leagueId=\(leagueID)"]) { res in
-                self.leagueView?.renderLatestMatchesToView(res:res!)
+                guard let res = res else{
+                    print("empty data...please try again!")
+                    return
+                }
+                self.leagueView?.renderLatestMatchesToView(res:res)
             }
         }
     }
     func FetchUpComingFixtureFromJson(_ leagueIndex:Int , leagueID:String) {
         Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2025-03-30","to=2025-04-30","leagueId=\(leagueID)"]) { res in
-            self.leagueView?.renderUpcomingMatchesToView(res:res!)
+            guard let res = res else{
+                print("empty data...please try again!")
+                return
+            }
+            self.leagueView?.renderUpcomingMatchesToView(res:res)
         }
     }
     //  -- Core Data -- --- ---- ----- ------ ------- --------
     func FetchfavLeaguesFromDataBase(){
         CoreDataDB.sharedInstance.FetchFavLeaguesFromDBModel { res in
-            self.favLeagueView!.renderFavLeaguesToTableView(res: res!)
+            guard let res = res else{
+                print("empty data...please try again!")
+                return
+            }
+            self.favLeagueView!.renderFavLeaguesToTableView(res: res)
         }
     }
     func removeAllFavLeagues(){

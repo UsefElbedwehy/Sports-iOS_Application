@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import Reachability
+
 protocol LeagueProtocol {
     func renderLatestMatchesToView(res: Fixtures)
     func renderTeamsToView(res: Teams)
@@ -30,10 +32,11 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     override func viewDidLoad() {
         super.viewDidLoad()
         self.clearsSelectionOnViewWillAppear = true
+        initNetworkChecker()
         presenter.attachToLeagueView(view: self)
-        presenter.FetchTeamsFromJson(leagueIndex,leagueID: leagueId)
-        presenter.FetchFixtureFromJson(leagueIndex,leagueID: leagueId)
-        presenter.FetchUpComingFixtureFromJson(leagueIndex,leagueID: leagueId)
+//        presenter.FetchTeamsFromJson(leagueIndex,leagueID: leagueId)
+//        presenter.FetchFixtureFromJson(leagueIndex,leagueID: leagueId)
+//        presenter.FetchUpComingFixtureFromJson(leagueIndex,leagueID: leagueId)
         UIHelper.addGradientSubViewToView(view: view)
         compsitionalLayoutInit()
         NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
@@ -42,6 +45,7 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     }
     override func viewWillAppear(_ animated: Bool) {
         isFavourite()
+        startCheckingNetwork()
     }
     func isFavourite(){
         presenter.isFound(id:leagueDetails.league_key ?? 28)
@@ -341,5 +345,55 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "leagueSectionsHeader", for: indexPath) as! LeagueHeaderCollectionReusableView
         header.headerLB.text = sectionsHeader[indexPath.section]
         return header
+    }
+    //Reachability --------------
+    func initNetworkChecker(){
+        reachability = try! Reachability()
+        NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged(note:)), name: .reachabilityChanged, object: reachability)
+    }
+    func startCheckingNetwork(){
+            do{
+              try reachability.startNotifier()
+            }catch{
+              print("could not start reachability notifier")
+            }
+    }
+    @objc func reachabilityChanged(note: Notification) {
+
+      let reachability = note.object as! Reachability
+
+      switch reachability.connection {
+      case .wifi:
+          print("Reachable via WiFi")
+          collectionView.isHidden = false
+          presenter.FetchTeamsFromJson(leagueIndex,leagueID: leagueId)
+          presenter.FetchFixtureFromJson(leagueIndex,leagueID: leagueId)
+          presenter.FetchUpComingFixtureFromJson(leagueIndex,leagueID: leagueId)
+      case .cellular:
+          print("Reachable via Cellular")
+          collectionView.isHidden = false
+          presenter.FetchTeamsFromJson(leagueIndex,leagueID: leagueId)
+          presenter.FetchFixtureFromJson(leagueIndex,leagueID: leagueId)
+          presenter.FetchUpComingFixtureFromJson(leagueIndex,leagueID: leagueId)
+      case .unavailable:
+        print("Network not reachable")
+          collectionView.isHidden = true
+          alertForNetworkFailure()
+      }
+    }
+    func stopCheckingNetwork(){
+        reachability.stopNotifier()
+        NotificationCenter.default.removeObserver(self, name: .reachabilityChanged, object: reachability)
+    }
+    
+    //Alert --------------
+    func alertForNetworkFailure(){
+        let alert = UIAlertController(title: "You are Offline!", message: "Connect to see the league details!", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .cancel, handler: {_ in
+            self.navigationController?.popToRootViewController(animated: true)
+        }
+        )
+        alert.addAction(ok)
+        self.present(alert, animated: false)
     }
 }

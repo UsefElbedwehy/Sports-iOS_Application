@@ -6,22 +6,25 @@
 //
 
 import UIKit
+import Reachability
 
 class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UICollectionViewDataSource , UICollectionViewDelegateFlowLayout {
     @IBOutlet weak var collectionView: UICollectionView!
     
     @IBOutlet weak var CollectionSubView: UIView!
+    let reachability = try! Reachability()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         initBackGroundColor()
         UIHelper.addGradientSubViewToView(view: view, at: 0)
-        tabBarController?.title = "Sports"
+//        tabBarController?.title = "Sports"
     }
     
     override func viewWillAppear(_ animated: Bool) {
         tabBarController?.title = "Sports"
+        startCheckingNetwork()
     }
     func initBackGroundColor() {
         view.backgroundColor = UIColor.black
@@ -47,7 +50,7 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
         cell.imgView.contentMode = .scaleAspectFill
         cell.viewLayer.layer.bounds = view.bounds
         cell.viewLayer.frame = view.bounds
-        UIHelper.addGradientSubViewToCell(view: cell.viewLayer, at: 0)
+        UIHelper.addGradientSubViewToView(view: cell.viewLayer, at: 0)
         UIHelper.addGradientSubView(view: cell.viewLayer, GardientColors: [UIColor.black.cgColor,UIColor.white.cgColor], at: 0)
         setCellConfigurations(cell)
         return cell
@@ -80,5 +83,39 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
         // Pass the selected object to the new view controller.
     }
     */
+    //Reachability --------------
+    func startCheckingNetwork(){
+        NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged(note:)), name: .reachabilityChanged, object: reachability)
+            do{
+              try reachability.startNotifier()
+            }catch{
+              print("could not start reachability notifier")
+            }
+    }
+    @objc func reachabilityChanged(note: Notification) {
 
+      let reachability = note.object as! Reachability
+
+      switch reachability.connection {
+      case .wifi:
+          print("Reachable via WiFi")
+      case .cellular:
+          print("Reachable via Cellular")
+      case .unavailable:
+        print("Network not reachable")
+          alertForNetworkFailure()
+      }
+    }
+    func stopCheckingNetwork(){
+        reachability.stopNotifier()
+        NotificationCenter.default.removeObserver(self, name: .reachabilityChanged, object: reachability)
+    }
+    
+    //Alert --------------
+    func alertForNetworkFailure(){
+        let alert = UIAlertController(title: "You are Offline!", message: "please, connect to the network to know the updated sports!", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alert.addAction(ok)
+        self.present(alert, animated: true)
+    }
 }
