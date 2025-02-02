@@ -5,6 +5,7 @@ target 'sportsApp' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 pod 'Kingfisher', '~> 7.0'
+pod 'ReachabilitySwift'
   # Pods for sportsApp
 
   target 'sportsAppTests' do
