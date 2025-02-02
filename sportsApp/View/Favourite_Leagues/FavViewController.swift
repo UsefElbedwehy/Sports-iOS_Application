@@ -119,14 +119,15 @@ class FavViewController: UIViewController, UITableViewDataSource, UITableViewDel
     }
     
     func addEmptyScreen(){
-        emptyImgView = UIImageView(frame: CGRect(x: 85, y: 300, width: 250, height: 250))
+        emptyImgView = UIImageView(frame: CGRect(x: 110, y: 300, width: 200, height: 200))
         emptyImgView.image = UIImage(named: "noData2")
 //        emptyImgView.tintColor = UIColor.white
         self.view.addSubview(emptyImgView)
         emptyMsgLabel = UILabel(frame: CGRect(x: emptyImgView.frame.minX, y: emptyImgView.frame.maxY, width: emptyImgView.frame.width, height: 30))
         emptyMsgLabel.text = "No favourite Leagues!"
-        emptyMsgLabel.textColor = UIColor.systemGray3
+        emptyMsgLabel.textColor = UIColor.systemGray2
         emptyMsgLabel.textAlignment = .center
+        emptyMsgLabel.font = UIFont.boldSystemFont(ofSize: 16.0)
         view.addSubview(emptyMsgLabel)
     }
     

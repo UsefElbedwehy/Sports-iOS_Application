@@ -15,7 +15,6 @@ protocol LeagueProtocol {
 
 class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueProtocol {
     
-    
     var leagueIndex = 0
     var leagueId    = "0"
     var isInitialFavourite = true
@@ -39,7 +38,7 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
         compsitionalLayoutInit()
         NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
         navigationController?.navigationBar.barTintColor = UIColor(red: 0.09, green: 0.008, blue: 0.051, alpha: 1)
-        sleep(UInt32(0.18))
+//        sleep(UInt32(0.18))
     }
     override func viewWillAppear(_ animated: Bool) {
         isFavourite()
@@ -221,33 +220,58 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
         let layout = UICollectionViewCompositionalLayout { sectionIndex , enviroment in
             switch sectionIndex {
             case 0:
-                return self.drawTopSection()
+//                if self.upComingArray.count != 0{
+                    return self.drawTopSection(withHeader: true)
+//                }else{
+//                    return self.drawTopSection(withHeader: false)
+//                }
+                
             case 1:
-                return self.drawMiddleSection()
+//                if self.fixturesArray.count != 0{
+                    return self.drawMiddleSection(withHeader: true)
+//                }else{
+//                    return self.drawMiddleSection(withHeader: false)
+//                }
             default:
-                return self.drawBottomSection()
+//                if self.teamsArray.count != 0{
+                    return self.drawBottomSection(withHeader: true)
+//                }else{
+//                    return self.drawBottomSection(withHeader: false)
+//                }
             }
         }
         collectionView.setCollectionViewLayout(layout, animated: true)
     }
     
-    func drawTopSection() -> NSCollectionLayoutSection {
-        let section = drawHorizontalSection()
+    func drawTopSection(withHeader: Bool) -> NSCollectionLayoutSection {
+        let section = drawHorizontalSection(withHeader: withHeader)
         return section
     }
-    func drawMiddleSection() -> NSCollectionLayoutSection {
-        return drawShapeOfSection()
+    func drawMiddleSection(withHeader: Bool) -> NSCollectionLayoutSection {
+        return drawShapeOfSection(withHeader: withHeader)
     }
-    func drawBottomSection() -> NSCollectionLayoutSection {
-        let section = drawHorizontalSection()
+    func drawBottomSection(withHeader: Bool) -> NSCollectionLayoutSection {
+        let section = drawHorizontalSection(withHeader: withHeader)
         return section
     }
-    func drawHorizontalSection() -> NSCollectionLayoutSection {
-        let section = drawShapeOfSection()
+    func drawHorizontalSection(withHeader: Bool) -> NSCollectionLayoutSection {
+        let section = drawShapeOfSection(withHeader: withHeader)
         section.orthogonalScrollingBehavior = .continuous
+        if withHeader {
+            let headerSize = NSCollectionLayoutSize(
+                        widthDimension: .fractionalWidth(0.95),
+                        heightDimension: .absolute(30)
+                    )
+            let header = NSCollectionLayoutBoundarySupplementaryItem(
+                    layoutSize: headerSize,
+                    elementKind: UICollectionView.elementKindSectionHeader,
+                    alignment: .top
+                )
+            section.boundarySupplementaryItems = [header]
+        }
         return section
     }
-    func drawShapeOfSection() -> NSCollectionLayoutSection{
+    func drawShapeOfSection(withHeader:Bool) -> NSCollectionLayoutSection{
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.5))
@@ -255,16 +279,18 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
         group.contentInsets = NSDirectionalEdgeInsets(top: 10.0, leading: 13.0, bottom: 10.0, trailing: 13.0)
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 10.0, trailing: 10.0)
-        let headerSize = NSCollectionLayoutSize(
+        if withHeader {
+            let headerSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(0.95),
                 heightDimension: .absolute(30)
             )
-        let header = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: headerSize,
-            elementKind: UICollectionView.elementKindSectionHeader,
-            alignment: .top
-        )
-        section.boundarySupplementaryItems = [header]
+            let header = NSCollectionLayoutBoundarySupplementaryItem(
+                layoutSize: headerSize,
+                elementKind: UICollectionView.elementKindSectionHeader,
+                alignment: .top
+            )
+            section.boundarySupplementaryItems = [header]
+        }
         return section
     }
     
