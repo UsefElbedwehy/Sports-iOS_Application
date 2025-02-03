@@ -8,6 +8,9 @@
 import UIKit
 import Kingfisher
 import Reachability
+
+
+
 let leaguesPlaceholderAddress = ["https://static.vecteezy.com/system/resources/previews/036/289/043/non_2x/football-premier-league-logo-design-vector.jpg"
     ,"https://img.freepik.com/free-vector/gradient-basketball-logo_52683-84313.jpg?semt=ais_hybrid"
     ,"https://www.shutterstock.com/image-vector/cricket-academy-sport-player-logo-600nw-2398285463.jpg"
@@ -16,11 +19,30 @@ var reachability:Reachability!
 protocol HomeProtocol {
     func renderDataToView(res:Leagues)
 }
-class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate , HomeProtocol{
+class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate , HomeProtocol, UISearchResultsUpdating{
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchTxt = searchController.searchBar.text else {
+            return
+        }
+        print(searchTxt)
+        
+        if searchTxt.isEmpty {
+            filteredArray = leaguesArray
+        } else {
+            filteredArray = leaguesArray.filter { league in
+                league.league_name!.lowercased().contains(searchTxt.lowercased())
+            }
+        }
+        leaguesTableView.reloadData()
+    }
+
+    
+    @IBOutlet weak var leaguesTableView: UITableView!
+    let searchController = UISearchController()
     let presenter = Presenter()
     var leagueIndex = 0
-    @IBOutlet weak var leaguesTableView: UITableView!
-    var leaguesArray = [League]()
+    var leaguesArray  = [League]()
+    var filteredArray = [League]()
     override func viewDidLoad() {
         super.viewDidLoad()
         initNetworkChecker()
@@ -29,7 +51,12 @@ class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITab
         leaguesTableView.delegate   = self
         leaguesTableView.dataSource = self
         NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
+        searchController.searchBar.placeholder = "Search for leagues"
+        searchController.searchBar.tintColor = .systemPink
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
     }
+ 
     override func viewWillAppear(_ animated: Bool) {
         startCheckingNetwork()
     }
@@ -50,31 +77,57 @@ class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return leaguesArray.count
+        if searchController.isActive {
+            return filteredArray.count
+        }else{
+            return leaguesArray.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = leaguesTableView.dequeueReusableCell(withIdentifier: "SportLeaguescell", for: indexPath) as! SportLeagueTopCell
-        cell.leagueNameLabel.text = leaguesArray[indexPath.row].league_name
-        let strUrl = leaguesArray[indexPath.row].league_logo ?? leaguesPlaceholderAddress[leagueIndex]
-        let url = URL(string: strUrl)
-        if let url = url {
-            cell.leagueLogoImgView.kf.setImage(with: url)
+        if searchController.isActive {
+            cell.leagueNameLabel.text = filteredArray[indexPath.row].league_name
+            let strUrl = filteredArray[indexPath.row].league_logo ?? leaguesPlaceholderAddress[leagueIndex]
+            let url = URL(string: strUrl)
+            if let url = url {
+                cell.leagueLogoImgView.kf.setImage(with: url)
+            }else{
+                cell.leagueLogoImgView.image = UIImage(named: "ftPlaceHolder")
+            }
         }else{
-            cell.leagueLogoImgView.image = UIImage(named: "ftPlaceHolder")
+            cell.leagueNameLabel.text = leaguesArray[indexPath.row].league_name
+            let strUrl = leaguesArray[indexPath.row].league_logo ?? leaguesPlaceholderAddress[leagueIndex]
+            let url = URL(string: strUrl)
+            if let url = url {
+                cell.leagueLogoImgView.kf.setImage(with: url)
+            }else{
+                cell.leagueLogoImgView.image = UIImage(named: "ftPlaceHolder")
+            }
         }
-       
+            
+        
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let leagueDCVC = self.storyboard?.instantiateViewController(identifier: "leagueDetailsCVC") as! LeagueDetailsCollectionViewController
-        leaguesArray[indexPath.row].leagueIndex = leagueIndex
-        leagueDCVC.leagueIndex = leagueIndex
-        leagueDCVC.leagueId = String(leaguesArray[indexPath.row].league_key ?? 0)
-        leagueDCVC.navigationItem.title = leaguesArray[indexPath.row].league_name ?? "League"
-        leagueDCVC.leagueDetails = leaguesArray[indexPath.row]
-        self.navigationController?.pushViewController(leagueDCVC, animated: true)
-    }
+        if searchController.isActive {
+            let leagueDCVC = self.storyboard?.instantiateViewController(identifier: "leagueDetailsCVC") as! LeagueDetailsCollectionViewController
+            filteredArray[indexPath.row].leagueIndex = leagueIndex
+            leagueDCVC.leagueIndex = leagueIndex
+            leagueDCVC.leagueId = String(filteredArray[indexPath.row].league_key ?? 0)
+            leagueDCVC.navigationItem.title = filteredArray[indexPath.row].league_name ?? "League"
+            leagueDCVC.leagueDetails = filteredArray[indexPath.row]
+            self.navigationController?.pushViewController(leagueDCVC, animated: true)
+        }else{
+            let leagueDCVC = self.storyboard?.instantiateViewController(identifier: "leagueDetailsCVC") as! LeagueDetailsCollectionViewController
+            leaguesArray[indexPath.row].leagueIndex = leagueIndex
+            leagueDCVC.leagueIndex = leagueIndex
+            leagueDCVC.leagueId = String(leaguesArray[indexPath.row].league_key ?? 0)
+            leagueDCVC.navigationItem.title = leaguesArray[indexPath.row].league_name ?? "League"
+            leagueDCVC.leagueDetails = leaguesArray[indexPath.row]
+            self.navigationController?.pushViewController(leagueDCVC, animated: true)
+        }
+        }
     
     //Reachability -----------------------------------------
     func initNetworkChecker(){

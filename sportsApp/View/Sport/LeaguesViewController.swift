@@ -25,6 +25,7 @@ class LeaguesViewController: UIViewController ,UICollectionViewDelegate , UIColl
     override func viewWillAppear(_ animated: Bool) {
         tabBarController?.title = "Sports"
         startCheckingNetwork()
+        
     }
     func initBackGroundColor() {
         view.backgroundColor = UIColor.black

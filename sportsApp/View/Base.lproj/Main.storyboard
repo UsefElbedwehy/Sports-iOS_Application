@@ -487,8 +487,8 @@
                             <rect key="frame" x="0.0" y="0.0" width="393" height="50"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VAs-v9-uKK">
-                                    <rect key="frame" x="10" y="15" width="373" height="20"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VAs-v9-uKK">
+                                    <rect key="frame" x="10" y="14.999999999999998" width="373" height="20.333333333333329"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                     <color key="textColor" systemColor="systemPinkColor"/>
                                     <nil key="highlightedColor"/>
@@ -525,8 +525,51 @@
                                 <rect key="frame" x="0.0" y="59" width="393" height="759"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="teamDetailsCell" rowHeight="163" id="PNb-4h-w2M" customClass="TeamCellInTeamDetails" customModule="sportsApp" customModuleProvider="target">
+                                        <rect key="frame" x="20" y="55.333332061767578" width="353" height="163"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="PNb-4h-w2M" id="KJ8-uY-OqK">
+                                            <rect key="frame" x="0.0" y="0.0" width="353" height="163"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vv6-4T-Jeq">
+                                                    <rect key="frame" x="0.0" y="0.0" width="353" height="163"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </view>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UvL-Il-6rj">
+                                                    <rect key="frame" x="76.666666666666686" y="22" width="200" height="89"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="200" id="NsH-P7-wkP"/>
+                                                        <constraint firstAttribute="width" constant="200" id="tnl-Nu-raU"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QLb-ty-Wkn">
+                                                    <rect key="frame" x="10" y="120.99999999999999" width="333" height="26.333333333333329"/>
+                                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="22"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="bottom" secondItem="Vv6-4T-Jeq" secondAttribute="bottom" id="3kb-I4-BkD"/>
+                                                <constraint firstItem="Vv6-4T-Jeq" firstAttribute="top" secondItem="KJ8-uY-OqK" secondAttribute="top" id="4W3-1z-KuP"/>
+                                                <constraint firstItem="QLb-ty-Wkn" firstAttribute="centerX" secondItem="KJ8-uY-OqK" secondAttribute="centerX" id="ABD-uM-j2w"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="UvL-Il-6rj" secondAttribute="bottom" constant="40" id="JdV-kP-Bal"/>
+                                                <constraint firstAttribute="trailing" secondItem="QLb-ty-Wkn" secondAttribute="trailing" constant="10" id="Lmc-J1-o8a"/>
+                                                <constraint firstItem="UvL-Il-6rj" firstAttribute="centerX" secondItem="KJ8-uY-OqK" secondAttribute="centerX" id="MjT-gQ-L18"/>
+                                                <constraint firstAttribute="trailing" secondItem="Vv6-4T-Jeq" secondAttribute="trailing" id="V4D-NB-Puc"/>
+                                                <constraint firstItem="Vv6-4T-Jeq" firstAttribute="leading" secondItem="KJ8-uY-OqK" secondAttribute="leading" id="ZsA-nj-0cj"/>
+                                                <constraint firstItem="UvL-Il-6rj" firstAttribute="top" secondItem="KJ8-uY-OqK" secondAttribute="topMargin" constant="10" id="b6O-Cy-bfO"/>
+                                                <constraint firstItem="QLb-ty-Wkn" firstAttribute="top" secondItem="UvL-Il-6rj" secondAttribute="bottom" constant="10" id="inQ-rl-i7F"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="teamLogoImgView" destination="UvL-Il-6rj" id="qo1-D2-7z6"/>
+                                            <outlet property="teamNameLB" destination="QLb-ty-Wkn" id="8nf-GG-lSe"/>
+                                        </connections>
+                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="teamCell" rowHeight="170" id="81v-35-YZe" customClass="PlayersOfTeamTableViewCell" customModule="sportsApp" customModuleProvider="target">
-                                        <rect key="frame" x="20" y="55.333332061767578" width="353" height="170"/>
+                                        <rect key="frame" x="20" y="218.33333206176758" width="353" height="170"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="81v-35-YZe" id="g26-aD-1iu">
                                             <rect key="frame" x="0.0" y="0.0" width="353" height="170"/>
@@ -694,10 +737,10 @@
                         <textAttributes key="titleTextAttributes">
                             <fontDescription key="fontDescription" name="Noteworthy-Light" family="Noteworthy" pointSize="24"/>
                             <color key="textColor" red="0.7097490466002262" green="0.23043213269880572" blue="0.30383820854789939" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                            <offsetWrapper key="textShadowOffset" horizontal="2" vertical="2"/>
+                            <offsetWrapper key="textShadowOffset" horizontal="0.0" vertical="0.0"/>
                         </textAttributes>
                         <textAttributes key="largeTitleTextAttributes">
-                            <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </textAttributes>
                     </navigationBar>
                     <connections>

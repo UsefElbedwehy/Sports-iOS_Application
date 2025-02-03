@@ -19,3 +19,4 @@ class Players : Decodable {
     var player_red_cards: String?
     var player_image: String?
 }
+

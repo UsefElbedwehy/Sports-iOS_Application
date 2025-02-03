@@ -13,6 +13,8 @@ class TeamDetailsViewController: UIViewController, UITableViewDelegate, UITableV
     @IBOutlet weak var teamTableView: UITableView!
     var playersArray = [Players]()
     var teamID = 0
+    var teamLogo = ""
+    var teamName = ""
     override func viewDidLoad() {
         super.viewDidLoad()
         teamTableView.delegate   = self
@@ -35,14 +37,20 @@ class TeamDetailsViewController: UIViewController, UITableViewDelegate, UITableV
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let playerCell = teamTableView.dequeueReusableCell(withIdentifier: "teamCell") as! PlayersOfTeamTableViewCell
+        
         switch indexPath.section {
         case 0:
-            playerCell.playerNameLB.text = playersArray[indexPath.row].player_name
+            let teamCardCell = teamTableView.dequeueReusableCell(withIdentifier: "teamDetailsCell") as! TeamCellInTeamDetails
+            teamCardCell.teamNameLB.text = teamName
+            setTeamLogo(teamCell: teamCardCell)
+            return teamCardCell
+            
         default:
+            let playerCell = teamTableView.dequeueReusableCell(withIdentifier: "teamCell") as! PlayersOfTeamTableViewCell
             configurePlayerCell(playerCell: playerCell, indexPath: indexPath)
+            return playerCell
         }
-        return playerCell
+        
     }
     func configurePlayerCell(playerCell: PlayersOfTeamTableViewCell, indexPath: IndexPath){
         playerCell.playerNameLB.text = playersArray[indexPath.row].player_name
@@ -68,20 +76,15 @@ class TeamDetailsViewController: UIViewController, UITableViewDelegate, UITableV
         playerCell.playerImgView.layer.borderWidth = 3.0
         playerCell.playerImgView.layer.borderColor = UIColor.blue.cgColor
     }
-//    func renderPlayersToView(res: Players) {
-//        playersArray = res
-//        DispatchQueue.main.async {
-//            
-//        }
-//    }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func setTeamLogo(teamCell: TeamCellInTeamDetails) {
+        if let teamLogoUrl = URL(string: teamLogo) {
+            let placeholder = UIImage(named: "team-placeholder")
+            teamCell.teamLogoImgView.kf.setImage(with: teamLogoUrl, placeholder: placeholder)
+        } else {
+            teamCell.teamLogoImgView.image = UIImage(named: "team-placeholder")
+        }
+        teamCell.teamLogoImgView.layer.cornerRadius = 20
     }
-    */
+
 
 }

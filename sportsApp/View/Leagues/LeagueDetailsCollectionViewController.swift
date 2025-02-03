@@ -24,7 +24,12 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     var fixturesArray = [Fixture]()
     var upComingArray = [Fixture]()
     var teamsArray = [Team]()
+    var emptyImgView:UIImageView!
+    var emptyMsgLabel:UILabel!
     let sectionsHeader = ["Upcoming  matches","Latest matches","Teams"]
+//    let sectionsHeaderEmpty = ["Upcoming  matches (No upcoming data right now)"
+//                               ,"Latest matches  (No upcoming data right now)"
+//                               ,"Teams  (No upcoming data right now)"]
     let awayPlaceHolder = "https://marketplace.canva.com/EAF7iHWkPBk/1/0/1600w/canva-blue-and-yellow-circle-modern-football-club-badge-logo-B4ALVxfLQS0.jpg"
     let homePlaceHolder = "https://images-platform.99static.com/4UjFKF0lqaqTGtHZIUNsYeNeUak=/500x500/top/smart/99designs-contests-attachments/45/45950/attachment_45950568"
     let teamLogoPlaceHolder = "https://e7.pngegg.com/pngimages/710/859/png-clipart-logo-football-team-football-logo-design-free-logo-design-template-label.png"
@@ -42,13 +47,14 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
         NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
         navigationController?.navigationBar.barTintColor = UIColor(red: 0.09, green: 0.008, blue: 0.051, alpha: 1)
 //        sleep(UInt32(0.18))
+        addEmptyScreen()
     }
     override func viewWillAppear(_ animated: Bool) {
         isFavourite()
         startCheckingNetwork()
     }
     func isFavourite(){
-        presenter.isFound(id:leagueDetails.league_key ?? 28)
+        presenter.isFound(id:leagueDetails.league_key ?? 0)
     }
     @objc func addToFav(){
         isFavourite()
@@ -222,26 +228,35 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     
     func compsitionalLayoutInit() {
         let layout = UICollectionViewCompositionalLayout { sectionIndex , enviroment in
+            if (self.teamsArray.count == 0) && (self.fixturesArray.count == 0) && (self.upComingArray.count == 0) {
+                self.collectionView.isHidden = true
+                self.emptyImgView.isHidden = false
+                self.emptyMsgLabel.isHidden = false
+            }else{
+                self.collectionView.isHidden = false
+                self.emptyImgView.isHidden = true
+                self.emptyMsgLabel.isHidden = true
+            }
             switch sectionIndex {
             case 0:
-//                if self.upComingArray.count != 0{
+                if self.upComingArray.count != 0{
                     return self.drawTopSection(withHeader: true)
-//                }else{
-//                    return self.drawTopSection(withHeader: false)
-//                }
+                }else{
+                    return self.drawTopSection(withHeader: false)
+                }
                 
             case 1:
-//                if self.fixturesArray.count != 0{
+                if self.fixturesArray.count != 0{
                     return self.drawMiddleSection(withHeader: true)
-//                }else{
-//                    return self.drawMiddleSection(withHeader: false)
-//                }
+                }else{
+                    return self.drawMiddleSection(withHeader: false)
+                }
             default:
-//                if self.teamsArray.count != 0{
+                if self.teamsArray.count != 0{
                     return self.drawBottomSection(withHeader: true)
-//                }else{
-//                    return self.drawBottomSection(withHeader: false)
-//                }
+                }else{
+                    return self.drawBottomSection(withHeader: false)
+                }
             }
         }
         collectionView.setCollectionViewLayout(layout, animated: true)
@@ -301,9 +316,12 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.section == 2 {
             let teamVC = self.storyboard?.instantiateViewController(identifier: "teamVC") as! TeamDetailsViewController
-            teamVC.teamID = teamsArray[indexPath.row].team_key ?? 50
-            teamVC.playersArray = teamsArray[indexPath.row].players!
+            isInitialFavourite = true
+            teamVC.teamID = teamsArray[indexPath.row].team_key ?? 0
+            teamVC.playersArray = teamsArray[indexPath.row].players ?? [Players()]
             teamVC.navigationItem.title = teamsArray[indexPath.row].team_name ?? "team"
+            teamVC.teamLogo = teamsArray[indexPath.row].team_logo ?? "empty"
+            teamVC.teamName = teamsArray[indexPath.row].team_name ?? "undefined team"
             self.navigationController?.pushViewController(teamVC, animated: true)
             
         }
@@ -340,10 +358,41 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     
     }
     */
+    
+    func addEmptyScreen(){
+        emptyImgView = UIImageView(frame: CGRect(x: 110, y: 300, width: 200, height: 200))
+        emptyImgView.image = UIImage(named: "noData2")
+        self.view.addSubview(emptyImgView)
+        emptyMsgLabel = UILabel(frame: CGRect(x: emptyImgView.frame.minX, y: emptyImgView.frame.maxY, width: emptyImgView.frame.width, height: 30))
+        emptyMsgLabel.text = "No data to show!"
+        emptyMsgLabel.textColor = UIColor.systemGray2
+        emptyMsgLabel.textAlignment = .center
+        emptyMsgLabel.font = UIFont.boldSystemFont(ofSize: 16.0)
+        view.addSubview(emptyMsgLabel)
+    }
 
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "leagueSectionsHeader", for: indexPath) as! LeagueHeaderCollectionReusableView
-        header.headerLB.text = sectionsHeader[indexPath.section]
+        switch indexPath.section {
+        case 0:
+//            if upComingArray.count == 0 {
+//                header.headerLB.text = sectionsHeaderEmpty[indexPath.section]
+//            }else{
+                header.headerLB.text = sectionsHeader[indexPath.section]
+//            }
+        case 1:
+//            if fixturesArray.count == 0  {
+//                header.headerLB.text = sectionsHeaderEmpty[indexPath.section]
+//            }else{
+                header.headerLB.text = sectionsHeader[indexPath.section]
+//            }
+        default:
+//            if fixturesArray.count == 0 {
+//                header.headerLB.text = sectionsHeaderEmpty[indexPath.section]
+//            }else{
+                header.headerLB.text = sectionsHeader[indexPath.section]
+//            }
+        }
         return header
     }
     //Reachability --------------

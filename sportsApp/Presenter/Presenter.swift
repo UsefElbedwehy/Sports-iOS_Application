@@ -51,7 +51,7 @@ class Presenter {
                 self.leagueView?.renderLatestMatchesToView(res:res)
             }
         }else{
-            Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2024-12-01","to=2025-01-29","leagueId=\(leagueID)"]) { res in
+            Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2024-01-29","to=2025-01-29","leagueId=\(leagueID)"]) { res in
                 guard let res = res else{
                     print("empty data...please try again!")
                     return
@@ -61,7 +61,7 @@ class Presenter {
         }
     }
     func FetchUpComingFixtureFromJson(_ leagueIndex:Int , leagueID:String) {
-        Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2025-03-30","to=2025-04-30","leagueId=\(leagueID)"]) { res in
+        Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2025-02-5","to=2025-06-30","leagueId=\(leagueID)"]) { res in
             guard let res = res else{
                 print("empty data...please try again!")
                 return
