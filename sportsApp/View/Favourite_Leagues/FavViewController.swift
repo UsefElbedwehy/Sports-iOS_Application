@@ -12,22 +12,25 @@ import Reachability
 protocol FavLeagueProtocol {
     func renderFavLeaguesToTableView(res: [League])
 }
-class FavViewController: UIViewController, UITableViewDataSource, UITableViewDelegate , FavLeagueProtocol{
+class FavViewController: UIViewController, UITableViewDataSource, UITableViewDelegate , FavLeagueProtocol , UISearchResultsUpdating{
     
     var favLeagues          = [League]()
     var basketballLeagues   = [League]()
     var footballLeagues     = [League]()
     var cricketLeagues      = [League]()
     var tennisLeagues       = [League]()
+    var filteredArray       = [League]()
     let navBarTitle = "Favourite Leagues"
     let presenter = Presenter()
     @IBOutlet weak var favTableView: UITableView!
     var emptyImgView:UIImageView!
     var emptyMsgLabel:UILabel!
+    let searchController = UISearchController()
     override func viewDidLoad() {
         super.viewDidLoad()
         favTableView.delegate = self
         favTableView.dataSource = self
+//        addSearchBar()
         initNetworkChecker()
         UIHelper.addGradientSubViewToView(view: view, at: 0)
         UIHelper.addGradientSubView(view: view, tableView: favTableView)
@@ -132,7 +135,32 @@ class FavViewController: UIViewController, UITableViewDataSource, UITableViewDel
         emptyMsgLabel.font = UIFont.boldSystemFont(ofSize: 16.0)
         view.addSubview(emptyMsgLabel)
     }
-    
+    //Search--------------------------------------------------------
+    func addSearchBar(){
+        searchController.searchBar.placeholder = "Search for leagues"
+        searchController.searchBar.tintColor = .systemPink
+        searchController.searchBar.searchTextField.textColor = .white
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.backgroundColor = .black
+        self.searchController.obscuresBackgroundDuringPresentation = true
+        navigationItem.searchController = searchController
+        
+    }
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchTxt = searchController.searchBar.text else {
+            return
+        }
+        print(searchTxt)
+        
+        if searchTxt.isEmpty {
+            filteredArray = favLeagues
+        } else {
+            filteredArray = favLeagues.filter { league in
+                league.league_name!.lowercased().contains(searchTxt.lowercased())
+            }
+        }
+        favTableView.reloadData()
+    }
 //    func convertToFourLeagues(){
 //        for favLeague in favLeagues {
 //            if favLeague.leagueIndex == 0 {

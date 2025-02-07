@@ -20,23 +20,6 @@ protocol HomeProtocol {
     func renderDataToView(res:Leagues)
 }
 class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate , HomeProtocol, UISearchResultsUpdating{
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let searchTxt = searchController.searchBar.text else {
-            return
-        }
-        print(searchTxt)
-        
-        if searchTxt.isEmpty {
-            filteredArray = leaguesArray
-        } else {
-            filteredArray = leaguesArray.filter { league in
-                league.league_name!.lowercased().contains(searchTxt.lowercased())
-            }
-        }
-        leaguesTableView.reloadData()
-    }
-
-    
     @IBOutlet weak var leaguesTableView: UITableView!
     let searchController = UISearchController()
     let presenter = Presenter()
@@ -51,16 +34,15 @@ class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITab
         leaguesTableView.delegate   = self
         leaguesTableView.dataSource = self
         NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
-        searchController.searchBar.placeholder = "Search for leagues"
-        searchController.searchBar.tintColor = .systemPink
-        searchController.searchResultsUpdater = self
-        navigationItem.searchController = searchController
+        addSearchBar()
+        ActivityIndecator.instance.start(at: self)
     }
  
     override func viewWillAppear(_ animated: Bool) {
         startCheckingNetwork()
     }
     func renderDataToView(res:Leagues) {
+        ActivityIndecator.instance.stop()
         leaguesArray = res.result!
         DispatchQueue.main.async {
             self.leaguesTableView.reloadData()
@@ -128,6 +110,29 @@ class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITab
             self.navigationController?.pushViewController(leagueDCVC, animated: true)
         }
         }
+    //Search--------------------------------------------------------
+    func addSearchBar(){
+        searchController.searchBar.placeholder = "Search for leagues"
+        searchController.searchBar.tintColor = .systemPink
+        searchController.searchBar.searchTextField.textColor = .white
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
+    }
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let searchTxt = searchController.searchBar.text else {
+            return
+        }
+        print(searchTxt)
+        
+        if searchTxt.isEmpty {
+            filteredArray = leaguesArray
+        } else {
+            filteredArray = leaguesArray.filter { league in
+                league.league_name!.lowercased().contains(searchTxt.lowercased())
+            }
+        }
+        leaguesTableView.reloadData()
+    }
     
     //Reachability -----------------------------------------
     func initNetworkChecker(){

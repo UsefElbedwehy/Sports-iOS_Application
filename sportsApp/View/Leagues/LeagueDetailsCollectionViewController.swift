@@ -16,7 +16,7 @@ protocol LeagueProtocol {
 }
 
 class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueProtocol {
-    
+    var isInitial = true
     var leagueIndex = 0
     var leagueId    = "0"
     var isInitialFavourite = true
@@ -27,9 +27,6 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     var emptyImgView:UIImageView!
     var emptyMsgLabel:UILabel!
     let sectionsHeader = ["Upcoming  matches","Latest matches","Teams"]
-//    let sectionsHeaderEmpty = ["Upcoming  matches (No upcoming data right now)"
-//                               ,"Latest matches  (No upcoming data right now)"
-//                               ,"Teams  (No upcoming data right now)"]
     let awayPlaceHolder = "https://marketplace.canva.com/EAF7iHWkPBk/1/0/1600w/canva-blue-and-yellow-circle-modern-football-club-badge-logo-B4ALVxfLQS0.jpg"
     let homePlaceHolder = "https://images-platform.99static.com/4UjFKF0lqaqTGtHZIUNsYeNeUak=/500x500/top/smart/99designs-contests-attachments/45/45950/attachment_45950568"
     let teamLogoPlaceHolder = "https://e7.pngegg.com/pngimages/710/859/png-clipart-logo-football-team-football-logo-design-free-logo-design-template-label.png"
@@ -39,15 +36,12 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
         self.clearsSelectionOnViewWillAppear = true
         initNetworkChecker()
         presenter.attachToLeagueView(view: self)
-//        presenter.FetchTeamsFromJson(leagueIndex,leagueID: leagueId)
-//        presenter.FetchFixtureFromJson(leagueIndex,leagueID: leagueId)
-//        presenter.FetchUpComingFixtureFromJson(leagueIndex,leagueID: leagueId)
         UIHelper.addGradientSubViewToView(view: view)
         compsitionalLayoutInit()
         NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
         navigationController?.navigationBar.barTintColor = UIColor(red: 0.09, green: 0.008, blue: 0.051, alpha: 1)
-//        sleep(UInt32(0.18))
         addEmptyScreen()
+        ActivityIndecator.instance.start(at: self)
     }
     override func viewWillAppear(_ animated: Bool) {
         isFavourite()
@@ -60,8 +54,9 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
         isFavourite()
     }
     func renderLatestMatchesToView(res: Fixtures) {
+        ActivityIndecator.instance.stop()
         guard let result = res.result else {
-                print("Error: Fixtures result is nil")
+                print("Error: Latest result is nil")
                 return
             }
             fixturesArray = result
@@ -71,9 +66,10 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     }
     func renderUpcomingMatchesToView(res: Fixtures) {
         guard let result = res.result else {
-                print("Error: Fixtures result is nil")
+                print("Error: Upcoming result is nil")
                 return
             }
+        ActivityIndecator.instance.stop()
         upComingArray = result
         DispatchQueue.main.async {
             self.collectionView.reloadData()
@@ -85,6 +81,7 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
                 print("Error: Teams result is nil")
                 return
             }
+        ActivityIndecator.instance.stop()
             teamsArray = result
         DispatchQueue.main.async {
             self.collectionView.reloadData()
@@ -229,9 +226,13 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
     func compsitionalLayoutInit() {
         let layout = UICollectionViewCompositionalLayout { sectionIndex , enviroment in
             if (self.teamsArray.count == 0) && (self.fixturesArray.count == 0) && (self.upComingArray.count == 0) {
-                self.collectionView.isHidden = true
-                self.emptyImgView.isHidden = false
-                self.emptyMsgLabel.isHidden = false
+                if self.isInitial {
+                    self.isInitial = false
+                }else{
+                    self.collectionView.isHidden = true
+                    self.emptyImgView.isHidden = false
+                    self.emptyMsgLabel.isHidden = false
+                }
             }else{
                 self.collectionView.isHidden = false
                 self.emptyImgView.isHidden = true
@@ -326,38 +327,6 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
             
         }
     }
-    
-    
-    // MARK: UICollectionViewDelegate
-
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-    
-    }
-    */
     
     func addEmptyScreen(){
         emptyImgView = UIImageView(frame: CGRect(x: 110, y: 300, width: 200, height: 200))
