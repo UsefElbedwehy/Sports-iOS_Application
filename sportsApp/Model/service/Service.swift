@@ -7,12 +7,12 @@
 
 import Foundation
 protocol ApiProtocol {
-    static func fetchLeaguesFromModel(leagueIndex:Int,compilationHandler: @escaping (Leagues?)->Void)
-    static func fetchFixturesFromModel(leagueIndex:Int,exten:[String],compilationHandler: @escaping (Fixtures?)->Void)
-    static func fetchTeamsFromModel(leagueIndex:Int,exten:String,compilationHandler: @escaping (Teams?)->Void)
+    static func fetchLeaguesFromModel(leagueIndex:Int,compilationHandler: @escaping (Leagues?,Error?)->Void)
+    static func fetchFixturesFromModel(leagueIndex:Int,exten:[String],compilationHandler: @escaping (Fixtures?,Error?)->Void)
+    static func fetchTeamsFromModel(leagueIndex:Int,exten:String,compilationHandler: @escaping (Teams?,Error?)->Void)
 }
 class Service : ApiProtocol {
-    static func fetchLeaguesFromModel(leagueIndex:Int,compilationHandler: @escaping(Leagues?) -> Void) {
+    static func fetchLeaguesFromModel(leagueIndex:Int,compilationHandler: @escaping(Leagues?,Error?) -> Void) {
         let url = URL(string: ApiKeys.createApiUrl(league: Sports.sports[leagueIndex] , parameter: ApiParameters().Leagues))
         guard let url = url else{ return }
         let request = URLRequest(url: url)
@@ -20,17 +20,17 @@ class Service : ApiProtocol {
         let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Error fetching data: \(error.localizedDescription)")
-                compilationHandler(nil)
+                compilationHandler(nil,error)
                 return
             }
             guard let data = data else {
                 print("No data received from server.")
-                compilationHandler(nil)
+                compilationHandler(nil,error.unsafelyUnwrapped)
                 return
             }
             do{
                 let result = try JSONDecoder().decode(Leagues.self, from: data)
-                compilationHandler(result)
+                compilationHandler(result,nil)
             }catch let error {
                 print("------------------------")
                 print(error.localizedDescription)
@@ -38,7 +38,7 @@ class Service : ApiProtocol {
         }
         task.resume()
     }
-    static func fetchFixturesFromModel(leagueIndex:Int ,exten:[String],compilationHandler: @escaping(Fixtures?) -> Void) {
+    static func fetchFixturesFromModel(leagueIndex:Int ,exten:[String],compilationHandler: @escaping(Fixtures?,Error?) -> Void) {
         let url = URL(string: ApiKeys.createApiUrlWithExten(league: Sports.sports[leagueIndex] , parameter: ApiParameters().Fixtures, exten: exten))
         print(url ?? "url")
         guard let url = url else{ return }
@@ -47,12 +47,12 @@ class Service : ApiProtocol {
         let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Error fetching data: \(error.localizedDescription)")
-                compilationHandler(nil)
+                compilationHandler(nil,error)
                 return
             }
             guard let data = data else {
                 print("No data received from server.")
-                compilationHandler(nil)
+                compilationHandler(nil,error)
                 return
             }
 //            // Debug: Print the raw JSON response
@@ -61,7 +61,7 @@ class Service : ApiProtocol {
 //            }
             do{
                 let result = try JSONDecoder().decode(Fixtures.self, from: data)
-                compilationHandler(result)
+                compilationHandler(result,nil)
             }catch let error {
                 print("----------XX-------------")
                 print(error.localizedDescription)
@@ -69,7 +69,7 @@ class Service : ApiProtocol {
         }
         task.resume()
     }
-    static func fetchTeamsFromModel(leagueIndex:Int,exten:String,compilationHandler: @escaping(Teams?) -> Void) {
+    static func fetchTeamsFromModel(leagueIndex:Int,exten:String,compilationHandler: @escaping(Teams?,Error?) -> Void) {
         let url = URL(string: ApiKeys.createApiUrlWithExten(league: Sports.sports[leagueIndex] , parameter: ApiParameters().Teams, exten: ["leagueId=\(exten)"]))
         print(url ?? "url")
         guard let url = url else{ return }
@@ -78,17 +78,17 @@ class Service : ApiProtocol {
         let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Error fetching data: \(error.localizedDescription)")
-                compilationHandler(nil)
+                compilationHandler(nil,error)
                 return
             }
             guard let data = data else {
                 print("No data received from server.")
-                compilationHandler(nil)
+                compilationHandler(nil,error)
                 return
             }     
             do{
                 let result = try JSONDecoder().decode(Teams.self, from: data)
-                compilationHandler(result)
+                compilationHandler(result,nil)
             }catch let error {
                 print("--------XXX--------------")
                 print(error.localizedDescription)
