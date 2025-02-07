@@ -23,7 +23,7 @@ class Presenter {
     }
     
     func FetchLeaguesFromJson(_ leagueIndex:Int){
-        Service.fetchLeaguesFromModel(leagueIndex:leagueIndex) { res in
+        Service.fetchLeaguesFromModel(leagueIndex:leagueIndex) { res , error in
             guard let res = res else{
                 print("empty data...please try again!")
                 return
@@ -32,7 +32,7 @@ class Presenter {
         }
     }
     func FetchTeamsFromJson(_ leagueIndex:Int, leagueID:String) {
-        Service.fetchTeamsFromModel(leagueIndex:leagueIndex, exten: leagueID) { res in
+        Service.fetchTeamsFromModel(leagueIndex:leagueIndex, exten: leagueID) { res, error in
             guard let res = res else{
                 print("empty data...please try again!")
                 return
@@ -43,7 +43,7 @@ class Presenter {
     //from=2025-01-25&to=2025-02-25&leagueId=
     func FetchFixtureFromJson(_ leagueIndex:Int , leagueID:String) {
         if leagueID == "28"{
-            Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2022-11-20","to=2022-12-19","leagueId=\(leagueID)"]) { res in
+            Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2022-11-20","to=2022-12-19","leagueId=\(leagueID)"]) { res, error in
                 guard let res = res else{
                     print("empty data...please try again!")
                     return
@@ -51,7 +51,7 @@ class Presenter {
                 self.leagueView?.renderLatestMatchesToView(res:res)
             }
         }else{
-            Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2024-01-29","to=2025-01-29","leagueId=\(leagueID)"]) { res in
+            Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2024-01-29","to=2025-01-29","leagueId=\(leagueID)"]) { res , error in
                 guard let res = res else{
                     print("empty data...please try again!")
                     return
@@ -61,7 +61,7 @@ class Presenter {
         }
     }
     func FetchUpComingFixtureFromJson(_ leagueIndex:Int , leagueID:String) {
-        Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2025-02-5","to=2025-06-30","leagueId=\(leagueID)"]) { res in
+        Service.fetchFixturesFromModel(leagueIndex:leagueIndex , exten: ["from=2025-02-5","to=2025-06-30","leagueId=\(leagueID)"]) { res, error in
             guard let res = res else{
                 print("empty data...please try again!")
                 return
