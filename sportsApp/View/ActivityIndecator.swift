@@ -10,11 +10,15 @@ import UIKit
 class ActivityIndecator {
     public static let instance = ActivityIndecator()
     var networkIndecator = UIActivityIndicatorView(style: .large)
-    public func start(view:UIView){
-        networkIndecator.center = view.center
+    public func start(at:UIViewController){
+        networkIndecator.center = at.view.center
+        networkIndecator.color = UIColor.white
+        at.view.addSubview(networkIndecator)
         networkIndecator.startAnimating()
     }
     public func stop(){
-        networkIndecator.stopAnimating()
+        DispatchQueue.main.async {
+            self.networkIndecator.stopAnimating()
+        }
     }
 }
