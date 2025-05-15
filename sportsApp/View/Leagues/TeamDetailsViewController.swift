@@ -20,7 +20,7 @@ class TeamDetailsViewController: UIViewController, UITableViewDelegate, UITableV
         teamTableView.delegate   = self
         teamTableView.dataSource = self
         UIHelper.addGradientSubViewToView(view: view)
-        NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
+        navigationController?.setCustomBackButton(for: navigationItem)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

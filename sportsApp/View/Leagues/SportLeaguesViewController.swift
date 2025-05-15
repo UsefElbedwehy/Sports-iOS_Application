@@ -33,18 +33,20 @@ class SportLeaguesViewController: UIViewController, UITableViewDataSource, UITab
         presenter.attachToView(view: self)
         leaguesTableView.delegate   = self
         leaguesTableView.dataSource = self
-        NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
+        navigationController?.setCustomBackButton(for: navigationItem)
         addSearchBar()
-        ActivityIndecator.instance.start(at: self)
+//        self.leaguesTableView.startActivityIndicator()
+        self.view.startActivityIndicator()
     }
  
     override func viewWillAppear(_ animated: Bool) {
         startCheckingNetwork()
     }
     func renderDataToView(res:Leagues) {
-        ActivityIndecator.instance.stop()
+        
         leaguesArray = res.result!
         DispatchQueue.main.async {
+            self.view.stopActivityIndicator()
             self.leaguesTableView.reloadData()
         }
     }

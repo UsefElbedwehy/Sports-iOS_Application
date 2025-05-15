@@ -38,14 +38,14 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
         presenter.attachToLeagueView(view: self)
         UIHelper.addGradientSubViewToView(view: view)
         compsitionalLayoutInit()
-        NavBarSetUp.setBackBtn(navigationItem: navigationItem, navController: navigationController!)
+        navigationController?.setCustomBackButton(for: navigationItem)
         navigationController?.navigationBar.barTintColor = UIColor(red: 0.09, green: 0.008, blue: 0.051, alpha: 1)
         addEmptyScreen()
-        ActivityIndecator.instance.start(at: self)
+        self.startCheckingNetwork()
     }
     override func viewWillAppear(_ animated: Bool) {
         isFavourite()
-        startCheckingNetwork()
+        self.collectionView.startActivityIndicator()
     }
     func isFavourite(){
         presenter.isFound(id:leagueDetails.league_key ?? 0)
@@ -54,13 +54,14 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
         isFavourite()
     }
     func renderLatestMatchesToView(res: Fixtures) {
-        ActivityIndecator.instance.stop()
+        
         guard let result = res.result else {
                 print("Error: Latest result is nil")
                 return
             }
             fixturesArray = result
         DispatchQueue.main.async {
+            self.collectionView.stopActivityIndicator()
             self.collectionView.reloadData()
         }
     }
@@ -69,9 +70,10 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
                 print("Error: Upcoming result is nil")
                 return
             }
-        ActivityIndecator.instance.stop()
+        
         upComingArray = result
         DispatchQueue.main.async {
+            self.collectionView.stopActivityIndicator()
             self.collectionView.reloadData()
         }
     }
@@ -81,9 +83,9 @@ class LeagueDetailsCollectionViewController: UICollectionViewController ,LeagueP
                 print("Error: Teams result is nil")
                 return
             }
-        ActivityIndecator.instance.stop()
             teamsArray = result
         DispatchQueue.main.async {
+            self.collectionView.stopActivityIndicator()
             self.collectionView.reloadData()
         }
     }

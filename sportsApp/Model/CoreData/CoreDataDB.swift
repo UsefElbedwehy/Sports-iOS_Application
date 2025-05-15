@@ -8,6 +8,7 @@
 import Foundation
 import CoreData
 import UIKit
+
 protocol DataBaseProtocol {
     func SaveFavLeaguesToDBModel(leagues:[League])
     func FetchFavLeaguesFromDBModel(compilationHandler: @escaping ([League]?)->Void)
@@ -17,6 +18,7 @@ protocol DataBaseProtocol {
 
 class CoreDataDB : DataBaseProtocol {
     public static let sharedInstance = CoreDataDB()
+    
     private var managedContex: NSManagedObjectContext!
     private var favLeagues = [NSManagedObject]()
     private let favLeaguesEntityName = "FavLeagues"
@@ -37,16 +39,11 @@ class CoreDataDB : DataBaseProtocol {
             favLeagues.setValue(league.league_name, forKey: leagueNameKey)
             favLeagues.setValue(league.league_logo, forKey: leagueLogoKey)
             favLeagues.setValue(league.leagueIndex, forKey: leagueIndexKey)
-            print("\(String(describing: league.league_key))")
-            print("\(String(describing: league.league_name))")
-            print("\(String(describing: league.league_logo))")
-            print("\(String(describing: league.leagueIndex))")
         }
         do{
             try managedContex.save()
             print("saved")
         }catch let error {
-            print("XXXXXXXXXXXXXXXXXXXXXXXX")
             print(error.localizedDescription)
         }
     }
@@ -63,16 +60,11 @@ class CoreDataDB : DataBaseProtocol {
                 tempLeague.league_name = favLeague.value(forKey: leagueNameKey) as? String
                 tempLeague.league_logo = favLeague.value(forKey: leagueLogoKey) as? String
                 tempLeague.leagueIndex = favLeague.value(forKey: leagueIndexKey) as? Int
-                print("\(String(describing: tempLeague.league_key))")
-                print("\(String(describing: tempLeague.league_name))")
-                print("\(String(describing: tempLeague.league_logo))")
-                print("\(String(describing: tempLeague.leagueIndex))")
                 leagueArray.append(tempLeague)
             }
             compilationHandler(leagueArray)
             print("fetched")
         }catch let error{
-            print("XXXXXYYYYYYYYYYYYYYYXXXX")
             print(error.localizedDescription)
         }
     }
@@ -88,15 +80,10 @@ class CoreDataDB : DataBaseProtocol {
                 tempLeague.league_name = favLeague.value(forKey: leagueNameKey) as? String
                 tempLeague.league_logo = favLeague.value(forKey: leagueLogoKey) as? String
                 tempLeague.leagueIndex = favLeague.value(forKey: leagueIndexKey) as? Int
-                print("\(String(describing: tempLeague.league_key))")
-                print("\(String(describing: tempLeague.league_name))")
-                print("\(String(describing: tempLeague.league_logo))")
-                print("\(String(describing: tempLeague.leagueIndex))")
                 leagueArray.append(tempLeague)
             }
             print("fetched")
         }catch let error{
-            print("XXXXXYYYYYYYYYYYYYYYXXXX")
             print(error.localizedDescription)
         }
         return leagueArray
@@ -139,18 +126,4 @@ class CoreDataDB : DataBaseProtocol {
         }
         compilationHandler(isFound)
     }
-//    func removeOneFavLeagueFromDBModel(id:Int){
-//        _ = FetchFavLeaguesFromDBModel()
-//        for favLeague in favLeagues {
-//            if (favLeague.value(forKey: leagueIdKey) as! Int) == id {
-//                managedContex.delete(favLeague)
-//            }
-//        }
-//        do{
-//            try managedContex.save()
-//            print("Deleted!")
-//        }catch let error {
-//            print(error.localizedDescription)
-//        }
-//    }
 }
