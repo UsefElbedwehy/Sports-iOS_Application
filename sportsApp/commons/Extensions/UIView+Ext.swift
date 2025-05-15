@@ -21,6 +21,7 @@ extension UIView {
         loading.translatesAutoresizingMaskIntoConstraints = false
         loading.hidesWhenStopped = true
         loading.tag = Self.loadingViewTag
+        loading.color = .white
         loading.startAnimating()
 
         addSubview(loading)
