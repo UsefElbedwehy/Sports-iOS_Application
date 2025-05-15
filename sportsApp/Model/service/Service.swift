@@ -7,93 +7,48 @@
 
 import Foundation
 protocol ApiProtocol {
-    static func fetchLeaguesFromModel(leagueIndex:Int,compilationHandler: @escaping (Leagues?,Error?)->Void)
-    static func fetchFixturesFromModel(leagueIndex:Int,exten:[String],compilationHandler: @escaping (Fixtures?,Error?)->Void)
-    static func fetchTeamsFromModel(leagueIndex:Int,exten:String,compilationHandler: @escaping (Teams?,Error?)->Void)
+    static func fetchLeaguesFromModel(leagueIndex:Int,completionHandler: @escaping (Leagues?,Error?)->Void)
+    static func fetchFixturesFromModel(leagueIndex:Int,exten:[String],completionHandler: @escaping (Fixtures?,Error?)->Void)
+    static func fetchTeamsFromModel(leagueIndex:Int,exten:String,completionHandler: @escaping (Teams?,Error?)->Void)
 }
 class Service : ApiProtocol {
-    static func fetchLeaguesFromModel(leagueIndex:Int,compilationHandler: @escaping(Leagues?,Error?) -> Void) {
-        let url = URL(string: ApiKeys.createApiUrl(league: Sports.sports[leagueIndex] , parameter: ApiParameters().Leagues))
-        guard let url = url else{ return }
-        let request = URLRequest(url: url)
-        let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error fetching data: \(error.localizedDescription)")
-                compilationHandler(nil,error)
-                return
-            }
-            guard let data = data else {
-                print("No data received from server.")
-                compilationHandler(nil,error.unsafelyUnwrapped)
-                return
-            }
-            do{
-                let result = try JSONDecoder().decode(Leagues.self, from: data)
-                compilationHandler(result,nil)
-            }catch let error {
-                print("------------------------")
-                print(error.localizedDescription)
-            }
-        }
-        task.resume()
+    static func fetchLeaguesFromModel(leagueIndex:Int,completionHandler: @escaping(Leagues?,Error?) -> Void) {
+        fetchData(url: ApiKeys.createApiUrl(league: Sports.sports[leagueIndex] , parameter: ApiParameters().Leagues), completion: completionHandler)
     }
-    static func fetchFixturesFromModel(leagueIndex:Int ,exten:[String],compilationHandler: @escaping(Fixtures?,Error?) -> Void) {
-        let url = URL(string: ApiKeys.createApiUrlWithExten(league: Sports.sports[leagueIndex] , parameter: ApiParameters().Fixtures, exten: exten))
-        print(url ?? "url")
-        guard let url = url else{ return }
-        let request = URLRequest(url: url)
-        let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error fetching data: \(error.localizedDescription)")
-                compilationHandler(nil,error)
-                return
-            }
-            guard let data = data else {
-                print("No data received from server.")
-                compilationHandler(nil,error)
-                return
-            }
-//            // Debug: Print the raw JSON response
-//            if let jsonString = String(data: data, encoding: .utf8) {
-//                print("Raw JSON response: \(jsonString)")
-//            }
-            do{
-                let result = try JSONDecoder().decode(Fixtures.self, from: data)
-                compilationHandler(result,nil)
-            }catch let error {
-                print("----------XX-------------")
-                print(error.localizedDescription)
-            }
-        }
-        task.resume()
+    static func fetchFixturesFromModel(leagueIndex:Int ,exten:[String],completionHandler: @escaping(Fixtures?,Error?) -> Void) {
+       fetchData(url:  ApiKeys.createApiUrlWithExten(league: Sports.sports[leagueIndex] , parameter: ApiParameters().Fixtures, exten: exten), completion: completionHandler)
     }
-    static func fetchTeamsFromModel(leagueIndex:Int,exten:String,compilationHandler: @escaping(Teams?,Error?) -> Void) {
-        let url = URL(string: ApiKeys.createApiUrlWithExten(league: Sports.sports[leagueIndex] , parameter: ApiParameters().Teams, exten: ["leagueId=\(exten)"]))
-        print(url ?? "url")
-        guard let url = url else{ return }
-        let request = URLRequest(url: url)
+    static func fetchTeamsFromModel(leagueIndex:Int,exten:String,completionHandler: @escaping(Teams?,Error?) -> Void) {
+        fetchData(url:  ApiKeys.createApiUrlWithExten(league: Sports.sports[leagueIndex] , parameter: ApiParameters().Teams, exten: ["leagueId=\(exten)"]) , completion: completionHandler)
+    }
+}
+
+extension Service {
+    static func fetchData<T: Decodable>(url: String,completion: @escaping (T?, Error?) -> Void){
+        guard let newUrl = URL(string: url) else {
+            completion(nil, NSError(domain: "Invalid URL", code: 1000, userInfo: nil))
+            return
+        }
+        let request = URLRequest(url: newUrl)
         let session = URLSession(configuration: .default)
         let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("Error fetching data: \(error.localizedDescription)")
-                compilationHandler(nil,error)
+                completion(nil, error)
                 return
             }
             guard let data = data else {
-                print("No data received from server.")
-                compilationHandler(nil,error)
+                completion(nil,NSError(domain: "Invalid Data", code: 1021, userInfo: nil))
                 return
-            }     
-            do{
-                let result = try JSONDecoder().decode(Teams.self, from: data)
-                compilationHandler(result,nil)
+            }
+            do {
+                let responseData = try JSONDecoder().decode(T.self, from: data)
+                completion(responseData, nil)
             }catch let error {
-                print("--------XXX--------------")
-                print(error.localizedDescription)
+                print(error)
+                completion(nil, error)
             }
         }
         task.resume()
     }
 }
+
